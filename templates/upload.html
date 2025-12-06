@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Photos - Photo Server{% endblock %}
+
+{% block content %}
+<div class="upload-content">
+    <h2>📤 Upload New Photos</h2>
+    
+    <form id="uploadForm" action="{{ url_for('upload_photo') }}" method="post" enctype="multipart/form-data">
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <h3>Select Photos to Upload</h3>
+            <p>Click here or drag and drop photos</p>
+            <p class="file-info">Supported formats: JPG, PNG, GIF, BMP, WebP</p>
+            <p class="file-info">Maximum file size: 16MB per photo</p>
+            <input type="file" id="photoInput" name="photos" multiple accept="image/*" required>
+        </div>
+        
+        <div class="selected-files" id="selectedFiles" style="display: none;">
+            <h4>Selected Files:</h4>
+            <ul id="fileList"></ul>
+        </div>
+        
+        <div class="upload-actions">
+            <button type="button" id="clearBtn" class="btn btn-secondary" style="display: none;">Clear Selection</button>
+            <button type="submit" id="uploadBtn" class="btn btn-primary" style="display: none;">Upload Photos</button>
+        </div>
+    </form>
+    
+    <div class="upload-progress" id="uploadProgress" style="display: none;">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p id="progressText">Uploading...</p>
+    </div>
+    
+    <div class="help-section">
+        <h3>Upload Tips</h3>
+        <ul>
+            <li>You can select multiple photos at once</li>
+            <li>Photos will be automatically optimized for web viewing</li>
+            <li>Large images will be resized to fit your screen</li>
+            <li>Original quality is preserved for smaller images</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

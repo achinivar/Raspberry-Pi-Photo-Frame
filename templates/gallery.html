@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Photo Gallery - Photo Server{% endblock %}
+
+{% block content %}
+<div class="gallery-content">
+    <div class="gallery-header">
+        <h2>🖼️ Photo Gallery</h2>
+        <div class="gallery-actions">
+            <button id="selectAllBtn" class="btn btn-secondary">Select All</button>
+            <button id="deleteSelectedBtn" class="btn btn-danger" style="display: none;">Delete Selected</button>
+            <a href="{{ url_for('upload_page') }}" class="btn btn-primary">Upload More</a>
+        </div>
+    </div>
+    
+    {% if photos %}
+        <div class="photo-grid" id="photoGrid">
+            {% for photo in photos %}
+            <div class="photo-item" data-filename="{{ photo.filename }}">
+                <div class="photo-checkbox">
+                    <input type="checkbox" class="photo-check" id="photo_{{ loop.index }}">
+                    <label for="photo_{{ loop.index }}"></label>
+                </div>
+                <div class="photo-container">
+                    <img src="{{ url_for('uploaded_file', filename=photo.filename) }}" 
+                         alt="Photo" 
+                         loading="lazy"
+                         onclick="togglePhotoSelection('{{ photo.filename }}')">
+                    <div class="photo-overlay">
+                        <button class="delete-btn" onclick="deletePhoto('{{ photo.filename }}')" title="Delete this photo">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+                <div class="photo-info">
+                    <p class="photo-name">{{ photo.filename[:20] }}{% if photo.filename|length > 20 %}...{% endif %}</p>
+                    <p class="photo-details">
+                        {{ "%.1f"|format(photo.size / 1024 / 1024) }}MB • {{ photo.created }}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-gallery">
+            <div class="empty-icon">📷</div>
+            <h3>No Photos Yet</h3>
+            <p>Upload your first photo to get started!</p>
+            <a href="{{ url_for('upload_page') }}" class="btn btn-primary">Upload Photos</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h3>Confirm Delete</h3>
+        <p id="deleteMessage">Are you sure you want to delete the selected photo(s)?</p>
+        <div class="modal-actions">
+            <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+            <button id="confirmDelete" class="btn btn-danger">Delete</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
