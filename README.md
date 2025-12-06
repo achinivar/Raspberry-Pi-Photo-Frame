@@ -247,6 +247,33 @@ The project includes a Flask-based web server for uploading and managing photos 
 
 Photos uploaded via the web server are stored in the `uploads/` directory and will appear in the slideshow after the next hourly refresh.
 
+## GUI Controller
+
+A simple Tkinter GUI (`photo_frame_gui.py`) provides an easy way to control both the server and slideshow.
+
+### Requirements
+
+- `python3-tk` (install system-wide): `sudo apt-get install python3-tk`
+
+### Usage
+
+Run the GUI:
+
+```bash
+python3 photo_frame_gui.py
+```
+
+The GUI provides:
+- **Start/Stop Server** button — Controls the Flask web server
+- **Start/Stop Slideshow** button — Controls the photo slideshow
+- **IP Address display** — Shows the server URL for network access
+
+The GUI automatically:
+- Creates a virtual environment if missing
+- Installs dependencies when starting the server
+- Makes the slideshow script executable if needed
+- Updates button colors (green for start, red for stop) based on process status
+
 ---
 
 This script is provided as-is for use on Raspberry Pi systems.
