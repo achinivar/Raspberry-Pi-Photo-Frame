@@ -16,12 +16,18 @@ A lightweight, full-screen photo slideshow application for Raspberry Pi with aut
 - **Random photo order** on each run
 - **Auto-rotation** of photos based on EXIF data
 - **Background operation** — runs all processes in the background
+- **Web photo server** — Flask-based web interface for uploading and managing photos from any device on your network
 
 ## Requirements
 
 - Raspberry Pi OS (or compatible Debian-based distribution)
 - Wayland display server
 - Optional: Touchscreen for gesture navigation
+
+### For Web Server
+
+- Python 3.7 or higher
+- Flask, Pillow, Werkzeug (install via `pip install -r requirements.txt`)
 
 ## Installation
 
@@ -204,5 +210,43 @@ You can modify these variables at the top of the script:
 - TIFF (`.tiff`)
 - WebP (`.webp`)
 
+
+## Web Photo Server
+
+The project includes a Flask-based web server for uploading and managing photos remotely.
+
+### Setup
+
+1. **Create a virtual environment:**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the server:**
+   ```bash
+   python app.py
+   ```
+
+4. **Access from any device:**
+   - Open browser: `http://localhost:5000` (on the Pi)
+   - Or from other devices: `http://PI_IP_ADDRESS:5000`
+
+### Features
+
+- Upload multiple photos at once
+- View photo gallery
+- Delete photos
+- Automatic image optimization (resize large images, convert formats)
+- Mobile-friendly interface
+
+Photos uploaded via the web server are stored in the `uploads/` directory and will appear in the slideshow after the next hourly refresh.
+
+---
 
 This script is provided as-is for use on Raspberry Pi systems.
