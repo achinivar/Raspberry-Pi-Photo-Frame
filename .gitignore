@@ -1,0 +1,10 @@
+# Virtual environment
+venv/
+env/
+ENV/
+.venv
+
+# Uploads directory - ignore all files but keep the directory structure
+uploads/*
+!uploads/.gitkeep
+
