@@ -1,7 +1,7 @@
 # Raspberry-Pi-Photo-Frame
 Raspberry Pi Photo Frame slideshow with touchscreen support"
 
-A lightweight, full-screen photo slideshow application for Raspberry Pi with automatic touchscreen gesture support and hourly photo refresh. Designed to run efficiently on Raspberry Pi hardware without overheating.
+A lightweight, full-screen photo slideshow application for Raspberry Pi with automatic touchscreen gesture support and hourly photo refresh. Includes a web-based photo server for remote photo upload and management. Designed to run efficiently on Raspberry Pi hardware without overheating.
 
 ## Features
 
@@ -23,11 +23,6 @@ A lightweight, full-screen photo slideshow application for Raspberry Pi with aut
 - Raspberry Pi OS (or compatible Debian-based distribution)
 - Wayland display server
 - Optional: Touchscreen for gesture navigation
-
-### For Web Server
-
-- Python 3.7 or higher
-- Flask, Pillow, Werkzeug (install via `pip install -r requirements.txt`)
 
 ## Installation
 
@@ -53,13 +48,44 @@ A lightweight, full-screen photo slideshow application for Raspberry Pi with aut
 
 ### Basic Usage
 
+You can control the photo frame using either the GUI controller or the command-line script.
+
+### GUI Controller
+
+A simple Tkinter GUI (`photo_frame_gui.py`) provides an easy way to control both the server and slideshow.
+
+#### Requirements
+
+- `python3-tk` (install system-wide): `sudo apt-get install python3-tk`
+
+#### Usage
+
+Run the GUI:
+
+```bash
+python3 photo_frame_gui.py
+```
+
+The GUI provides:
+- **Start/Stop Server** button — Controls the Flask web server
+- **Start/Stop Slideshow** button — Controls the photo slideshow
+- **IP Address display** — Shows the server URL for network access
+
+The GUI automatically:
+- Creates a virtual environment if missing
+- Installs dependencies when starting the server
+- Makes the slideshow script executable if needed
+- Updates button colors (green for start, red for stop) based on process status
+
+### Using the photo frame script
+
 Start the slideshow with a photo directory:
 
 ```bash
 ./pi_photo_frame.sh -run -dir /path/to/photos
 ```
 
-### Custom Delay
+#### Custom Delay
 
 Set how many seconds each photo displays (default is 15 seconds):
 
@@ -67,7 +93,7 @@ Set how many seconds each photo displays (default is 15 seconds):
 ./pi_photo_frame.sh -run -dir /path/to/photos -delay 15
 ```
 
-### Stop the Slideshow
+#### Stop the Slideshow
 
 Stop all running photo frame processes:
 
@@ -75,75 +101,9 @@ Stop all running photo frame processes:
 ./pi_photo_frame.sh -stop
 ```
 
-### Examples
-
-```bash
-# Display photos from ~/Pictures with default 15-second delay
-./pi_photo_frame.sh -run -dir ~/Pictures
-
-# Display photos with 5-second delay
-./pi_photo_frame.sh -run -dir /home/pi/PhotoFrame -delay 5
-
-# Stop the running slideshow
-./pi_photo_frame.sh -stop
-```
-
 ## How It Works
 
-### Automatic Detection
-
-The script automatically detects:
-
-1. **Display Server**: Checks for Wayland and uses `wtype` for keyboard simulation
-2. **Touchscreen**: Scans `/dev/input/by-id/` for touchscreen devices and enables gesture support if found
-
-### Hourly Refresh
-
-The slideshow runs in a loop that:
-- Displays photos for 1 hour (3600 seconds)
-- Restarts `feh` to scan the directory again for new photos
-- Continues indefinitely
-
-This means you can add new photos to the directory and they'll appear in the slideshow within an hour without manual restart.
-
-### Touchscreen Gestures
-
-If a touchscreen is detected, `lisgd` is started with the following gestures:
-
-- **1-finger swipe left** (`1,LR`) → Right arrow key → Next photo
-- **1-finger swipe right** (`1,RL`) → Left arrow key → Previous photo
-- **Single-finger swipe down** (`1,DU`) → Escape key → Exit slideshow
-
-The gesture threshold uses lisgd's default value.
-
-### Background Operation
-
-All processes run in the background using `nohup`:
-- `lisgd` (if touchscreen detected)
-- `feh` slideshow loop
-
-The script exits immediately after starting these processes, so you can close the terminal.
-
-## Stopping the Slideshow
-
-To stop the slideshow and all associated processes, use the `-stop` option:
-
-```bash
-./pi_photo_frame.sh -stop
-```
-
-This will:
-- Stop all `feh` slideshow processes
-- Stop the `lisgd` gesture daemon (if running)
-- Stop the background refresh loop
-- Verify all processes have been terminated
-
-Alternatively, you can use the single-finger swipe down gesture on the touchscreen to exit, or manually kill processes:
-
-```bash
-pkill -u "$(id -u)" -x feh
-pkill -u "$(id -u)" -x lisgd
-```
+The slideshow automatically refreshes every hour to pick up new photos. If a touchscreen is detected, gesture controls are enabled. 
 
 ## Autostart on Boot
 
@@ -183,33 +143,18 @@ Replace `/home/pi/path/to/` with the actual path to the script and `/path/to/pho
 - Ensure `wtype` is installed for Wayland keyboard simulation
 - Verify you're running Wayland: `echo $XDG_SESSION_TYPE` should output "wayland"
 
-### High CPU Usage / Overheating
-
-- The default delay of 15 seconds gives the CPU time to idle between photo changes
-- If overheating persists, increase the delay: `-delay 20` or higher
-
 ### Photos Not Updating After Adding New Ones
 
-- The slideshow refreshes every hour (3600 seconds)
+- The slideshow refreshes every hour automatically
 - To force an immediate refresh, stop and restart the slideshow
-- The refresh interval can be modified by changing `REFRESH_SECS` in the script
 
 ## Configuration
 
-You can modify these variables at the top of the script:
-
-- `DEFAULT_DELAY=15` — Default seconds per photo
-- `REFRESH_SECS=3600` — Seconds between directory rescans (1 hour)
+Modify variables at the top of the script: `DEFAULT_DELAY=15` (seconds per photo) and `REFRESH_SECS=3600` (refresh interval).
 
 ## Supported Image Formats
 
-- JPEG (`.jpg`, `.jpeg`)
-- PNG (`.png`)
-- GIF (`.gif`)
-- BMP (`.bmp`)
-- TIFF (`.tiff`)
-- WebP (`.webp`)
-
+JPEG, PNG, GIF, BMP, TIFF, WebP
 
 ## Web Photo Server
 
@@ -239,40 +184,9 @@ The project includes a Flask-based web server for uploading and managing photos 
 
 ### Features
 
-- Upload multiple photos at once
-- View photo gallery
-- Delete photos
-- Automatic image optimization (resize large images, convert formats)
-- Mobile-friendly interface
+Upload multiple photos, view gallery, delete photos, automatic image optimization, mobile-friendly interface.
 
 Photos uploaded via the web server are stored in the `uploads/` directory and will appear in the slideshow after the next hourly refresh.
-
-## GUI Controller
-
-A simple Tkinter GUI (`photo_frame_gui.py`) provides an easy way to control both the server and slideshow.
-
-### Requirements
-
-- `python3-tk` (install system-wide): `sudo apt-get install python3-tk`
-
-### Usage
-
-Run the GUI:
-
-```bash
-python3 photo_frame_gui.py
-```
-
-The GUI provides:
-- **Start/Stop Server** button — Controls the Flask web server
-- **Start/Stop Slideshow** button — Controls the photo slideshow
-- **IP Address display** — Shows the server URL for network access
-
-The GUI automatically:
-- Creates a virtual environment if missing
-- Installs dependencies when starting the server
-- Makes the slideshow script executable if needed
-- Updates button colors (green for start, red for stop) based on process status
 
 ---
 
